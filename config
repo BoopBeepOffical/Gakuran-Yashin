@@ -1,0 +1,1424 @@
+-- https://lua.expert/
+local t = {
+	Shared = {
+		GuardbreakStaminaThreshold = 10,
+		CombatRagdollStunDuration = 2,
+		RagdollOnAirborneHit = true,
+		ParryBufferAfterHit = 2,
+		ParryAttackLockoutSeconds = 0.15,
+		GuardbreakLockoutSeconds = 2,
+		HitFxLifetime = 0.5,
+		HitFxEmitCount = 4,
+		HitboxWindupExtra = 0.012,
+		M2GroundBurstOnHitOnly = false,
+		DebugHitboxVisualizers = false,
+		ParryStun = {
+			M2 = 1
+		},
+		ParryStunSpeed = {
+			M1 = 4,
+			M2 = 4
+		},
+		ParriedHighlight = {
+			Duration = 0.6,
+			TargetFillTransparency = 0.65,
+			TargetOutlineTransparency = 0.95,
+			Fill = Color3.fromRGB(222, 181, 69),
+			Outline = Color3.fromRGB(255, 255, 255)
+		},
+		EvasiveHighlight = {
+			TargetFillTransparency = 0.65,
+			TargetOutlineTransparency = 0.8,
+			FadeInSeconds = 0.05,
+			FadeOutSeconds = 0.12,
+			Style = "Fade",
+			Fill = Color3.fromRGB(159, 160, 161),
+			Outline = Color3.fromRGB(255, 255, 255)
+		},
+		BoxingCounterHighlight = {
+			TargetFillTransparency = 0.48,
+			TargetOutlineTransparency = 0.82,
+			FadeInSeconds = 0.03,
+			FadeOutSeconds = 0.08,
+			Style = "Pulse",
+			PulseMinFillTransparency = 0.38,
+			PulseMaxFillTransparency = 0.72,
+			PulseMinOutlineTransparency = 0.65,
+			PulseMaxOutlineTransparency = 0.92,
+			PulsePeriodSeconds = 0.13,
+			Fill = Color3.fromRGB(55, 140, 255),
+			Outline = Color3.fromRGB(190, 225, 255)
+		},
+		M2HighlightColors = {
+			Default = Color3.fromRGB(222, 68, 68),
+			Boxing = Color3.fromRGB(171, 73, 217),
+			BoxingCounter = Color3.fromRGB(55, 140, 255),
+			HakariDouble = Color3.fromRGB(67, 160, 98),
+			Capoeira = Color3.fromRGB(65, 145, 255)
+		},
+		NetworkAnimPingCompensation = {
+			MaxEstimatedOneWaySeconds = 0.35
+		},
+		StepForward = {
+			Duration = 0.14,
+			MaxSpeed = 30
+		}
+	},
+	Block = {
+		PerfectBlockWindow = 0.125,
+		CooldownSeconds = 0.5
+	},
+	M1 = {
+		BaseDamage = 5,
+		FinisherKnockback = 35,
+		HitboxDuration = 0.15,
+		ComboResetTime = 1.55,
+		DefaultHitboxDelay = 0.32,
+		DefaultHitboxForwardOffset = 4,
+		RecoveryLockout = 0.4,
+		FinisherRecoveryLockout = 0.55,
+		FinisherCooldown = 1.2
+	},
+	M2 = {
+		BaseDamage = 8.5,
+		HitboxDuration = 0.15,
+		DefaultHitboxDelay = 0.3,
+		DefaultHitboxForwardOffset = 3,
+		RecoveryLockout = 0.5,
+		Cooldown = 7,
+		BotCooldown = 1,
+		DefaultStrongKnockback = 25
+	},
+	Evasive = {
+		DashDuration = 0.2,
+		DashSpeed = 30,
+		IFrameDuration = 0.3,
+		Cooldown = 1.5,
+		OutnumberedDashSpeedMultiplier = 1.5,
+		OutnumberedDashDurationMultiplier = 1.2
+	},
+	PunchingBag = {
+		Tag = "PunchingBag",
+		M1Impulse = 22,
+		M2Impulse = 38,
+		FinisherMultiplier = 1.35,
+		AttackerVelocityBlend = 0.3,
+		UpwardBias = 0.15,
+		AngularImpulseScale = 0.08,
+		MinRetriggerSeconds = 0.04,
+		HitFxLifetime = 0.5,
+		HitFxEmitCount = 4
+	},
+	ClientPredict = {
+		M1 = {
+			ComboResetTime = 1.55,
+			AttackDuration = 0.45,
+			FinisherCooldown = 1.25,
+			LocalParryAttackLockoutSeconds = 0.15,
+			LocalBlockAttackLockoutSeconds = 0.15
+		},
+		M2 = {
+			Cooldown = 7,
+			LocalParryAttackLockoutSeconds = 0.15,
+			LocalBlockAttackLockoutSeconds = 0.15,
+			LocalAttemptLockoutSeconds = 0.2
+		},
+		Evasive = {
+			Cooldown = 2,
+			ServerConfirmTimeout = 0.18
+		}
+	},
+	Styles = {
+		default = {
+			M1HitboxDelay = 0.32,
+			M2HitboxDelay = 0.3,
+			DamageMultiplier = 1,
+			M1DamageMultiplier = 1,
+			M2DamageMultiplier = 1,
+			BlockHitStaminaDrain = 35,
+			PostureDamageMultiplier = 1,
+			PostureResistanceMultiplier = 1,
+			GuardbreakDamageMultiplier = 1,
+			BlockChipPercent = 0.15,
+			M2StrongKnockback = 25,
+			M2HighlightColor = nil,
+			M2HighlightDelay = nil,
+			M2GrantsIFrames = false,
+			M2GrantsHyperArmor = false,
+			M2RequiresCounterHit = false,
+			M2CounterWindowDuration = nil,
+			M2CounterHighlightColor = nil,
+			M2CounterPostHitLockout = nil,
+			M2CounterVictimHitStun = nil,
+			ImmuneToRagdollM2 = false,
+			LowHealthDamageMultiplier = 1,
+			LowHealthDamageThreshold = nil,
+			M2WhiffSlowMultiplier = nil,
+			M2WhiffSlowDuration = nil,
+			PerfectBlockNextHitDamageMultiplier = nil,
+			PerfectBlockPostureRegenBoostDuration = nil,
+			PerfectBlockM2CooldownReduction = nil,
+			M2PostureRefundPercent = nil,
+			PostureRegenHaltDuration = nil,
+			HakariM2DoubleWindowDuration = nil,
+			HakariMomentumM1Requirement = nil,
+			HakariM2DoubleDamageMultiplier = nil,
+			HakariM2DoubleKnockbackMultiplier = nil,
+			HakariM2DoubleVerticalBias = nil,
+			HakariM2DoubleHighlightColor = nil,
+			HakariMomentumM2HitboxDelay = nil,
+			IdlePlaybackSpeed = nil,
+			WalkPlaybackSpeed = nil,
+			BlockHitVariants = nil,
+			HakariBlackFlashVfx = nil,
+			HakariUseLegacyReadyAura = nil,
+			DirtyRevengeWindow = nil,
+			DirtyRevengeUniqueAttackersRequired = nil,
+			DirtyRevengeHitsRequired = nil,
+			DirtyRevengeDuration = nil,
+			DirtyRevengeDamageMultiplier = nil,
+			DirtyRevengeProcCooldown = nil,
+			DirtyRevengePulseDelay = nil,
+			DirtyRevengePulseKnockback = nil,
+			DirtyRevengePulseRange = nil,
+			DirtyRevengeProcIFrameDuration = nil,
+			DirtyRevengePulseStunDuration = nil,
+			IncomingDamageMultiplier = nil,
+			SwitchStanceM2CooldownRefund = nil,
+			LowGuardStacksRequired = nil,
+			LowGuardStackingCombos = nil,
+			LowGuardStackDecayWindow = nil,
+			LowGuardEvasiveCooldownMultiplier = nil,
+			LowGuardDebuffDuration = nil,
+			LowGuardProcCooldown = nil,
+			GrappleChance = nil,
+			M1HitboxDelayOffsets = nil,
+			FirstM1HitboxDelayOffset = nil,
+			SecondM1HitboxDelayOffset = nil,
+			ThirdM1HitboxDelayOffset = nil,
+			FourthM1HitboxDelayOffset = nil,
+			M1HitboxForwardOffsetBonus = 0,
+			M2HitboxForwardOffsetBonus = 0,
+			M1HitboxForwardOffset = nil,
+			M2HitboxForwardOffset = nil,
+			SlamDisorientedDuration = nil,
+			M2SlamParryWindowDisableDuration = nil,
+			M2GrabAllowRagdollCombo = false,
+			M2GrabSlamRagdolls = true,
+			M2GrabLockDuration = nil,
+			M2KnockbackMultiplier = nil,
+			M2VerticalLaunchBias = nil,
+			M2RagdollLaunchStrength = nil,
+			M2RagdollLaunchVerticalImpulse = nil,
+			M2VictimHighlightColor = nil,
+			M1StepForwardStuds = nil,
+			M2StepForwardStuds = nil,
+			M2StepForwardDelay = nil,
+			M2StepForwardDuration = nil,
+			M2StepForwardMaxSpeed = nil,
+			M2StepForwardSound = nil,
+			M1StepForwardDelay = nil,
+			M1StepForwardDuration = nil,
+			M1StepForwardMaxSpeed = nil,
+			M1FinisherKnockback = nil,
+			M2MultiHitDelays = nil,
+			M2ActivateSound = nil,
+			MishimaCritVfx = nil,
+			LethweiCritVfx = nil,
+			MishimaCripple = nil,
+			MishimaUnbothered = nil,
+			MishimaShifty = nil,
+			M2Variants = nil,
+			M2Afterimage = nil,
+			M2ShuffleCamera = nil,
+			EvasiveCounter = nil,
+			M2HitColorFx = false
+		},
+		ali = {
+			M1HitboxDelay = 0.22,
+			M2HitboxDelay = 0.53,
+			BlockChipPercent = 0.2,
+			M2StrongKnockback = 6,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			GrappleChance = 0.25,
+			PerfectBlockNextHitDamageMultiplier = 1.05,
+			M2GrantsIFrames = true,
+			M2HitColorFx = true,
+			IdlePlaybackSpeed = 1,
+			M1HitboxForwardOffsetBonus = 0.3,
+			M2HitboxForwardOffsetBonus = 0.2,
+			M2StepForwardStuds = 2,
+			BlockHitVariants = { "BlockHitDodgeLeft", "BlockHitDodgeRight", "BlockHitDodgeBelowLeft", "BlockHitDodgeBelowRight" },
+			M1HitboxDelayOffsets = {
+				0.06,
+				0.15,
+				0.2,
+				0
+			},
+			M1StepForwardStuds = {
+				[1] = 1.5,
+				[3] = 1.5
+			},
+			M2Variants = {
+				Left = {
+					Anim = "M2",
+					HitboxDelay = 0.53,
+					Sound = "rbxassetid://81950410589024",
+					DamageMultiplier = 0.8,
+					KnockbackMultiplier = 0.6,
+					Ragdolls = false
+				},
+				Right = {
+					Anim = "M2Right",
+					HitboxDelay = 0.67,
+					Sound = "rbxassetid://95808511646111",
+					DamageMultiplier = 1.25,
+					KnockbackMultiplier = 1,
+					Ragdolls = true
+				}
+			},
+			M2ShuffleCamera = {
+				FovPull = -4,
+				ShakeDegrees = 0.35,
+				ShakeFrequency = 3.5,
+				BuildExponent = 1.5,
+				Volume = 0.65,
+				RollOffMaxDistance = 90
+			},
+			EvasiveCounter = {
+				Cooldown = 6,
+				MaxRange = 22,
+				IgnoreM2Cooldown = true,
+				VariantId = "Left"
+			},
+			M2Afterimage = {
+				Interval = 0.08,
+				Lifetime = 0.75,
+				StartTransparency = 0.35,
+				MaxGhosts = 10,
+				MaxDistance = 120,
+				Color = Color3.new(0/255, 0/255, 0/255)
+			}
+		},
+		basic = {
+			M2HitboxDelay = 0.525,
+			BlockChipPercent = 0.15,
+			M2StrongKnockback = 2,
+			GrappleChance = 0.25,
+			PerfectBlockNextHitDamageMultiplier = 1.05,
+			M1HitboxForwardOffsetBonus = 0.3,
+			M2HitboxForwardOffsetBonus = 0.2,
+			M1HitboxDelayOffsets = {
+				0.02,
+				0.02,
+				0.02,
+				0.02
+			}
+		},
+		boxing = {
+			M2HitboxDelay = 0.43,
+			BlockChipPercent = 0.2,
+			M2BlockChipPercent = 0.75,
+			M2MultiHitCount = 2,
+			M2MultiHitStrikeDamageMultiplier = 1,
+			M2StrongKnockback = 15,
+			M2GrantsIFrames = true,
+			SwitchStanceM2CooldownRefund = 1.5,
+			M1HitboxForwardOffsetBonus = 0.3,
+			M2HitboxForwardOffsetBonus = 0.2,
+			M2HighlightColor = Color3.fromRGB(171, 73, 217),
+			M1HitboxDelayOffsets = {
+				0.02,
+				0.02,
+				0.02,
+				0.06
+			}
+		},
+		bulky = {
+			M2HitboxDelay = 0.43,
+			BlockChipPercent = 0.25,
+			PostureDamageMultiplier = 1.1,
+			GuardbreakDamageMultiplier = 1.05,
+			M2StrongKnockback = 7,
+			GrappleChance = 1
+		},
+		cqc = {
+			M1HitboxDelay = 0.4,
+			M2HitboxDelay = 0.5,
+			M2StrongKnockback = 4,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			M2Cooldown = 11,
+			M1DamageMultiplier = 0.87,
+			PostureDamageMultiplier = 1.2,
+			BlockChipPercent = 0.2,
+			GrappleChance = 0.35,
+			M2GrantsIFrames = true,
+			IdlePlaybackSpeed = 1,
+			M1HitboxDelayOffsets = {
+				0,
+				0,
+				-0.1,
+				0.1
+			},
+			CQCCloseQuarters = {
+				MaxBonus = 0.25,
+				MinDistance = 4,
+				MaxDistance = 18
+			},
+			CQCClinchWin = {
+				DamagePerHit = 0.05,
+				MaxHits = 5,
+				DurationSeconds = 5
+			},
+			CQCBossRaid = {
+				PerAttacker = 0.02,
+				MaxAttackers = 5
+			},
+			CQCCritVfx = {
+				Fps = 60,
+				RingFrame = 0,
+				WindFrame = 16,
+				HitFxFrame = 19,
+				MaxDistance = 220,
+				EmitLifetime = 6,
+				SoundVolume = 0.28,
+				SoundRange = 45,
+				SoundMinRange = 8,
+				ScreenCasterOnly = true,
+				HitStartDelaySeconds = 0,
+				BarrageFlickerSeconds = 0.18,
+				TargetingBrightness = -0.04,
+				TargetingContrast = 0.14,
+				TargetingSaturation = -0.18,
+				TargetingFadeSeconds = 0.22,
+				BarrageFill = Color3.fromRGB(255, 96, 32),
+				BarrageOutline = Color3.fromRGB(255, 226, 170),
+				TargetingTint = Color3.fromRGB(255, 214, 190)
+			},
+			CQCRing = {
+				Debug = false,
+				Radius = 30,
+				Height = 16,
+				SelectionHalfAngleDegrees = 75,
+				ChargeSeconds = 1.5,
+				CancelWindowSeconds = 0.5,
+				MaxHoldSeconds = 3.5,
+				CritHits = 5,
+				HitInterval = 0.1,
+				HitDamage = 2.8,
+				DashSpeed = 55,
+				DashPassThroughStuds = 14,
+				WhiffCooldownSeconds = 11
+			}
+		},
+		dirty = {
+			PostureDamageMultiplier = 1.1,
+			BlockChipPercent = 0.25,
+			M2StrongKnockback = 25,
+			GrappleChance = 0.35,
+			ImmuneToRagdollM2 = true,
+			DirtyRevengeWindow = 2.5,
+			DirtyRevengeUniqueAttackersRequired = 2,
+			DirtyRevengeHitsRequired = 3,
+			DirtyRevengeDuration = 10,
+			DirtyRevengeDamageMultiplier = 2,
+			DirtyRevengeProcCooldown = 15,
+			DirtyRevengePulseDelay = 0.15,
+			DirtyRevengePulseKnockback = 50,
+			DirtyRevengePulseRange = 14,
+			DirtyRevengeProcIFrameDuration = 1,
+			DirtyRevengePulseStunDuration = 0.45
+		},
+		hakari = {
+			M1HitboxDelay = 0.21,
+			M2HitboxDelay = 0.35,
+			HakariMomentumM2HitboxDelay = 0.48,
+			BlockChipPercent = 0.15,
+			M2StrongKnockback = 25,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			HakariM2DoubleWindowDuration = 7,
+			HakariMomentumM1Requirement = 3,
+			HakariM2DoubleDamageMultiplier = 3,
+			HakariM2DoubleKnockbackMultiplier = 1.5,
+			HakariM2DoubleVerticalBias = 0.5,
+			IdlePlaybackSpeed = 1,
+			WalkPlaybackSpeed = 1.25,
+			HakariUseLegacyReadyAura = false,
+			M1HitboxForwardOffsetBonus = 0.3,
+			M2HitboxForwardOffsetBonus = 0.2,
+			HakariM2DoubleHighlightColor = Color3.fromRGB(67, 160, 98),
+			HakariBlackFlashVfx = {
+				Fps = 60,
+				Frame8 = 8,
+				Kick = 27,
+				MaxDistance = 220,
+				EmitLifetime = 4,
+				StatusDuration = 2.5
+			},
+			M1HitboxDelayOffsets = {
+				0.14,
+				0.16,
+				0.07,
+				0.17
+			}
+		},
+		karate = {
+			M1HitboxDelay = 0.24,
+			M2HitboxDelay = 0.4875,
+			BlockChipPercent = 0.15,
+			M2StrongKnockback = 15,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			GrappleChance = 0.25,
+			PerfectBlockPostureRegenBoostDuration = 3,
+			M2PostureRefundPercent = 0.25,
+			M1HitboxForwardOffsetBonus = 0.3,
+			M2HitboxForwardOffsetBonus = 0.2,
+			M1HitboxDelayOffsets = {
+				0.0375,
+				0.075,
+				0.15,
+				0.225
+			}
+		},
+		kickboxing = {
+			M1HitboxDelay = 0.3,
+			M2HitboxDelay = 0.3,
+			BlockChipPercent = 0.2,
+			M2StrongKnockback = 18,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			GrappleChance = 0.25,
+			IdlePlaybackSpeed = 1,
+			PostureDamageMultiplier = 1.1,
+			SwitchStanceM2CooldownRefund = 1.5,
+			LowGuardStacksRequired = 2,
+			LowGuardStackDecayWindow = 4,
+			LowGuardEvasiveCooldownMultiplier = 1.4,
+			LowGuardDebuffDuration = 5,
+			LowGuardProcCooldown = 6,
+			M1HitboxForwardOffsetBonus = 0.3,
+			M2HitboxForwardOffsetBonus = 0.2,
+			M1ComboDamageOverrides = {
+				[4] = 6.75
+			},
+			LowGuardStackingCombos = {
+				[3] = true,
+				[4] = true
+			},
+			M1HitboxDelayOffsets = {
+				-0.05,
+				0,
+				0.11,
+				0.22
+			}
+		},
+		kyokushin = {
+			M1HitboxDelay = 0.25,
+			M2HitboxDelay = 0.82,
+			M2Cooldown = 10,
+			M2DamageMultiplier = 1.35,
+			M2GrantsHyperArmor = true,
+			M2StrongKnockback = 12,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			IncomingDamageMultiplier = 0.9,
+			BlockChipPercent = 0.3,
+			GrappleChance = 0.25,
+			IdlePlaybackSpeed = 1,
+			M1HitboxDelayOffsets = {
+				0,
+				0.08,
+				0.08,
+				0.3
+			},
+			KyokushinIronBody = {
+				DamagePerStack = 0.15,
+				MaxStacks = 3,
+				AbsorbHighlightDuration = 0.45,
+				HighlightColor = Color3.fromRGB(255, 236, 190)
+			}
+		},
+		kure = {
+			BlockChipPercent = 0.15,
+			GrappleChance = 0.15,
+			LowHealthDamageMultiplier = 1.15,
+			LowHealthDamageThreshold = 0.25,
+			M1HitboxDelay = 0.32,
+			M2Cooldown = 12,
+			M2DamageMultiplier = 1.5,
+			M2GrantsHyperArmor = false,
+			M2StrongKnockback = 15,
+			SlamCollisionDamageMultiplier = 0.5,
+			SlamCollisionDuration = 0.4,
+			M2SlamParryWindowDisableDuration = 2,
+			M2GrabAllowRagdollCombo = false,
+			M2GrabSlamRagdolls = false,
+			M2GrabTargetForwardOffset = 2.7,
+			M2GrabSlamDelay = 0.3,
+			M2GrabLockDuration = 0.5,
+			M2GrabSuccessAnimSpeed = 1,
+			M2GrabSwingAnimSpeed = 1,
+			M2WhiffSlowMultiplier = 0.35,
+			M2WhiffSlowDuration = 1.5
+		},
+		muaythai = {
+			M1HitboxDelay = 0.3,
+			M2HitboxDelay = 0.6,
+			BlockHitStaminaDrain = 40.25,
+			PostureDamageMultiplier = 1.15,
+			BlockChipPercent = 0.3,
+			M2StrongKnockback = 20,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			GrappleChance = 0.55
+		},
+		skygaolang = {
+			M2HitboxDelay = 0.35,
+			DamageMultiplier = 1,
+			PostureDamageMultiplier = 1,
+			PostureResistanceMultiplier = 1,
+			GuardbreakDamageMultiplier = 1,
+			BlockChipPercent = 0.15,
+			M2StrongKnockback = 25,
+			GrappleChance = 0.15
+		},
+		striker = {
+			M1HitboxDelay = 0.35,
+			M2HitboxDelay = 0.45,
+			M2HighlightDelay = 0.25,
+			M2StrongKnockback = 4,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			BlockChipPercent = 0.2,
+			GrappleChance = 0.25,
+			IdlePlaybackSpeed = 1,
+			M1HitboxDelayOffsets = {
+				0,
+				0,
+				-0.12,
+				-0.23
+			},
+			M2Afterimage = {
+				Interval = 0.05,
+				Lifetime = 0.3,
+				StartTransparency = 0.45,
+				MaxGhosts = 12,
+				MaxDistance = 120,
+				Parts = { "RightUpperLeg", "RightLowerLeg", "RightFoot" }
+			}
+		},
+		variant = {
+			M2HitboxDelay = 0.35,
+			PostureDamageMultiplier = 1.1,
+			PostureResistanceMultiplier = 1,
+			GuardbreakDamageMultiplier = 1.05,
+			BlockChipPercent = 0.25,
+			M2StrongKnockback = 25,
+			GrappleChance = 0.45
+		},
+		taekwondo = {
+			M2HitboxDelay = 0.46,
+			BlockChipPercent = 0.2,
+			M2StrongKnockback = 25,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			QuickstepWindowDuration = 1,
+			QuickstepCooldownReductionFactor = 0.5
+		},
+		wild = {
+			M2HitboxDelay = 0.525,
+			BlockChipPercent = 0.15,
+			M2StrongKnockback = 25,
+			PostureRegenHaltDuration = 3
+		},
+		wingchun = {
+			M1HitboxDelay = 0.3,
+			M2HitboxDelay = 0.525,
+			M1DamageMultiplier = 0.96,
+			DamageMultiplier = 1,
+			PostureResistanceMultiplier = 0.9,
+			BlockChipPercent = 0.2,
+			M2StrongKnockback = 30,
+			GrappleChance = 0.15,
+			M2RequiresCounterHit = true,
+			M2CounterWindowDuration = 0.58,
+			M2CounterWhiffStun = 1.4,
+			M2CounterPostHitLockout = 0.35,
+			M2CounterDamageMultiplier = 1.3176,
+			M2Cooldown = 9,
+			M2CounterHoldSeconds = 1.367,
+			M2CounterHoldDistance = 3.6,
+			M2CounterVictimHitStun = 1.367,
+			M2CounterFps = 60,
+			M1HitboxDelayOffsets = {
+				0,
+				0,
+				0,
+				0.4
+			},
+			M1ComboDamageOverrides = {
+				[4] = 7.5
+			},
+			M2CounterHitFrames = { 25, 41, 52, 62, 82 }
+		},
+		wrestling = {
+			M1HitboxDelay = 0.26,
+			M2HitboxDelay = 0.3,
+			M2Cooldown = 12,
+			M2DamageMultiplier = 1.5,
+			M2GrantsHyperArmor = true,
+			BlockChipPercent = 0.15,
+			GuardbreakDamageMultiplier = 1.15,
+			M2StrongKnockback = -5,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			GrappleChance = 0.55,
+			SlamCollisionDamageMultiplier = 0.5,
+			SlamCollisionDuration = 0.5,
+			SlamDisorientedDuration = 4.5,
+			M2GrabTargetForwardOffset = 2.7,
+			M1FinisherKnockback = 22,
+			M2StepForwardStuds = 7,
+			M2StepForwardDelay = 0.1,
+			M2StepForwardDuration = 0.2,
+			M2StepForwardMaxSpeed = 45,
+			M2GrabSlamDelay = 0.55,
+			M2GrabLockDuration = 0.6,
+			M1HitboxDelayOffsets = {
+				0,
+				0.06,
+				0.09,
+				0.14
+			},
+			M2StepForwardSound = {
+				Folder = "WrestlingSounds",
+				Name = "CritDash"
+			}
+		},
+		mishima = {
+			M1HitboxDelay = 0.2,
+			M1StepForwardDuration = 0.15,
+			M1StepForwardMaxSpeed = 45,
+			M1FinisherKnockback = 22,
+			M2HitboxDelay = 0.4166666666666667,
+			M2MultiHitCount = 2,
+			M2MultiHitRagdollPhase = 2,
+			M2DamageMultiplier = 1.5,
+			M2MultiHitStrikeDamageMultiplier = 0.5,
+			M2Cooldown = 10,
+			M2RagdollLaunchStrength = 50,
+			M2RagdollLaunchVerticalImpulse = 90,
+			M2StrongKnockback = -2,
+			BlockChipPercent = 0.2,
+			GrappleChance = 0.25,
+			IdlePlaybackSpeed = 1,
+			M1HitboxDelayOffsets = {
+				0,
+				-0.02,
+				0.12,
+				0.13
+			},
+			M1StepForwardStuds = {
+				[4] = 5
+			},
+			M1StepForwardDelay = {
+				[4] = 0.18
+			},
+			M2MultiHitDelays = { 0.4166666666666667, 0.95 },
+			M2ActivateSound = {
+				Folder = "MishimaSounds",
+				Name = "CritActivate"
+			},
+			MishimaCritVfx = {
+				Folder = "Mishima",
+				MaxDistance = 220,
+				EmitLifetime = 4,
+				PhaseAssets = { "Lightning", "Lightningup" },
+				ArmHighlight = {
+					FillTransparency = 0.15,
+					OutlineTransparency = 0.1,
+					Seconds = 0.08333333333333333,
+					Parts = { "RightUpperArm", "RightLowerArm", "RightHand" },
+					FillColor = Color3.fromRGB(41, 56, 143),
+					OutlineColor = Color3.fromRGB(255, 255, 255)
+				}
+			},
+			MishimaCripple = {
+				HitsRequired = 4,
+				Duration = 4,
+				WalkSpeedMultiplier = 0.55
+			},
+			MishimaUnbothered = {
+				StunSeconds = 0.9,
+				ReflectMultiplier = 1
+			},
+			MishimaShifty = {
+				AttackKind = "M1"
+			}
+		},
+		lethwei = {
+			M1HitboxDelay = 0.35,
+			M2HitboxDelay = 0.43333333333333335,
+			BlockHitStaminaDrain = 40.25,
+			PostureDamageMultiplier = 1.15,
+			BlockChipPercent = 0.3,
+			GrappleChance = 0.55,
+			M2StrongKnockback = 20,
+			GuardbreakDamageMultiplier = 1.15,
+			M2RagdollLaunchStrength = 65,
+			M2RagdollLaunchVerticalImpulse = -70,
+			M1HitboxDelayOffsets = {
+				0.12,
+				0.12,
+				0.05,
+				0
+			},
+			M2ActivateSound = {
+				Folder = "LethweiSounds",
+				Name = "CritActivate"
+			},
+			LethweiCritVfx = {
+				Folder = "Lethwei",
+				MaxDistance = 220,
+				EmitLifetime = 4,
+				Assets = { "Meshlast", "Kick off" }
+			}
+		},
+		capoeira = {
+			M1HitboxDelay = 0.33,
+			M2HitboxDelay = 0.45,
+			M2HitboxDuration = 0.32,
+			M2Cooldown = 10,
+			GuardbreakDamageMultiplier = 1.05,
+			BlockChipPercent = 0.15,
+			EvasiveCooldownMultiplier = 0.75,
+			M2StrongKnockback = 22.5,
+			M2KnockbackMultiplier = 1.35,
+			M2VerticalLaunchBias = 0.45,
+			M2RagdollLaunchStrength = 99,
+			M2RagdollLaunchVerticalImpulse = 85.5,
+			M1HitboxDelayOffsets = {
+				0.02,
+				0.1,
+				0.02,
+				-0.05
+			},
+			M2VictimHighlightColor = Color3.fromRGB(65, 145, 255)
+		},
+		slugger = {
+			M1HitboxDelay = 0.2,
+			M2HitboxDelay = 0.82,
+			DamageMultiplier = 1.4,
+			IncomingDamageMultiplier = 1.15,
+			BlockChipPercent = 0.3,
+			M2StrongKnockback = 25,
+			GrappleChance = 0.35,
+			M1HitboxDelayOffsets = {
+				0.3,
+				0.25,
+				0.25,
+				0.17
+			}
+		}
+	},
+	Grapple = {
+		Duration = 2.29,
+		WinnerKnockback = 32,
+		M2ClashKnockback = 22,
+		LoserLockoutDuration = 0.6,
+		M2ClashLockoutDuration = 0.4,
+		GrappleChance = 0.25,
+		SwingCommitFraction = 0.25,
+		PostGrappleCooldown = 0.2,
+		DirtyGrappleDuration = 2,
+		DirtyGrappleHitCount = 4
+	},
+	NormalizeStyleKey = function(p1) --[[ NormalizeStyleKey | Line: 1803 ]]
+		if typeof(p1) ~= "string" then
+			return "default"
+		end
+
+		local v1 = string.lower(p1)
+
+		if v1 == "" then
+			return "default"
+		end
+
+		return v1
+	end
+}
+
+function t.GetStyleConfig(p1) --[[ GetStyleConfig | Line: 1816 | Upvalues: t (copy) ]]
+	return t.Styles[t.NormalizeStyleKey(p1)] or t.Styles.default
+end
+function t.GetStyleNumber(p1, p2, p3) --[[ GetStyleNumber | Line: 1821 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)[p2]
+
+	if typeof(v1) == "number" then
+		return v1
+	end
+
+	local v2 = t.Styles.default[p2]
+
+	if typeof(v2) == "number" then
+		return v2
+	end
+
+	return p3
+end
+function t.GetStyleM1ComboDamage(p1, p2, p3) --[[ GetStyleM1ComboDamage | Line: 1839 | Upvalues: t (copy) ]]
+	local M1ComboDamageOverrides = t.GetStyleConfig(p1).M1ComboDamageOverrides
+
+	if typeof(M1ComboDamageOverrides) ~= "table" then
+		return p3
+	end
+
+	local v1 = M1ComboDamageOverrides[p2]
+
+	if typeof(v1) == "number" and v1 > 0 then
+		return v1
+	end
+
+	return p3
+end
+function t.GetStyleAttackDamageMultiplier(p1, p2) --[[ GetStyleAttackDamageMultiplier | Line: 1850 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleNumber(p1, "DamageMultiplier", 1)
+
+	return v1 * t.GetStyleNumber(p1, if p2 == "M2" then "M2DamageMultiplier" else "M1DamageMultiplier", 1)
+end
+function t.GetStyleM2Cooldown(p1) --[[ GetStyleM2Cooldown | Line: 1857 | Upvalues: t (copy) ]]
+	return t.GetStyleNumber(p1, "M2Cooldown", t.M2.Cooldown)
+end
+function t.GetStyleEvasiveCooldown(p1) --[[ GetStyleEvasiveCooldown | Line: 1861 | Upvalues: t (copy) ]]
+	return t.Evasive.Cooldown * t.GetStyleNumber(p1, "EvasiveCooldownMultiplier", 1)
+end
+function t.GetCharacterEvasiveCooldown(p1, p2) --[[ GetCharacterEvasiveCooldown | Line: 1874 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleEvasiveCooldown(p2)
+
+	if typeof(p1) ~= "Instance" then
+		return v1
+	end
+
+	local v2 = p1:GetAttribute("LowGuardDebuff")
+
+	if typeof(v2) == "number" and v2 > 1 then
+		return v1 * v2
+	end
+
+	return v1
+end
+function t.GetStyleM2Variants(p1) --[[ GetStyleM2Variants | Line: 1887 | Upvalues: t (copy) ]]
+	local M2Variants = t.GetStyleConfig(p1).M2Variants
+
+	if typeof(M2Variants) == "table" then
+		return M2Variants
+	end
+
+	return nil
+end
+function t.GetStyleM2Variant(p1, p2) --[[ GetStyleM2Variant | Line: 1895 | Upvalues: t (copy) ]]
+	if typeof(p2) ~= "string" then
+		return nil
+	end
+
+	local v1 = t.GetStyleM2Variants(p1)
+	local v2 = if v1 then v1[p2] else v1
+
+	if typeof(v2) == "table" then
+		return v2
+	end
+
+	return nil
+end
+function t.GetStyleM2HitboxDelay(p1, p2, p3) --[[ GetStyleM2HitboxDelay | Line: 1907 | Upvalues: t (copy) ]]
+	if p2 == true then
+		local HakariMomentumM2HitboxDelay = t.GetStyleConfig(p1).HakariMomentumM2HitboxDelay
+
+		if typeof(HakariMomentumM2HitboxDelay) == "number" then
+			return HakariMomentumM2HitboxDelay
+		end
+	end
+
+	local v1 = t.GetStyleM2Variant(p1, p3)
+
+	if not v1 then
+		return t.GetStyleNumber(p1, "M2HitboxDelay", t.M2.DefaultHitboxDelay)
+	end
+
+	if typeof(v1.HitboxDelay) == "number" then
+		return v1.HitboxDelay
+	end
+
+	return t.GetStyleNumber(p1, "M2HitboxDelay", t.M2.DefaultHitboxDelay)
+end
+function t.GetStyleM2ShuffleCamera(p1) --[[ GetStyleM2ShuffleCamera | Line: 1921 | Upvalues: t (copy) ]]
+	local M2ShuffleCamera = t.GetStyleConfig(p1).M2ShuffleCamera
+
+	if typeof(M2ShuffleCamera) == "table" then
+		return M2ShuffleCamera
+	end
+
+	return nil
+end
+function t.GetStyleIdlePlaybackSpeed(p1, p2) --[[ GetStyleIdlePlaybackSpeed | Line: 1929 | Upvalues: t (copy) ]]
+	local IdlePlaybackSpeed = t.GetStyleConfig(p1).IdlePlaybackSpeed
+
+	if typeof(IdlePlaybackSpeed) == "number" and IdlePlaybackSpeed > 0 then
+		return IdlePlaybackSpeed
+	end
+
+	return p2
+end
+function t.GetStyleWalkPlaybackSpeed(p1, p2) --[[ GetStyleWalkPlaybackSpeed | Line: 1937 | Upvalues: t (copy) ]]
+	local WalkPlaybackSpeed = t.GetStyleConfig(p1).WalkPlaybackSpeed
+
+	if typeof(WalkPlaybackSpeed) == "number" and WalkPlaybackSpeed > 0 then
+		return WalkPlaybackSpeed
+	end
+
+	return p2
+end
+function t.GetStyleM2VariantMultiplier(p1, p2, p3) --[[ GetStyleM2VariantMultiplier | Line: 1947 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleM2Variant(p1, p2)
+
+	if not v1 then
+		return 1
+	end
+
+	if typeof(v1[p3]) == "number" and v1[p3] > 0 then
+		return v1[p3]
+	end
+
+	return 1
+end
+function t.GetStyleM2VariantBoolean(p1, p2, p3, p4) --[[ GetStyleM2VariantBoolean | Line: 1955 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleM2Variant(p1, p2)
+
+	if not v1 then
+		return p4
+	end
+
+	if typeof(v1[p3]) == "boolean" then
+		return v1[p3]
+	end
+
+	return p4
+end
+function t.GetStyleBlockHitVariants(p1) --[[ GetStyleBlockHitVariants | Line: 1963 | Upvalues: t (copy) ]]
+	local BlockHitVariants = t.GetStyleConfig(p1).BlockHitVariants
+
+	if typeof(BlockHitVariants) == "table" and #BlockHitVariants > 0 then
+		return BlockHitVariants
+	end
+
+	return nil
+end
+function t.GetStyleBlackFlashVfx(p1) --[[ GetStyleBlackFlashVfx | Line: 1971 | Upvalues: t (copy) ]]
+	local HakariBlackFlashVfx = t.GetStyleConfig(p1).HakariBlackFlashVfx
+
+	if typeof(HakariBlackFlashVfx) == "table" then
+		return HakariBlackFlashVfx
+	end
+
+	return nil
+end
+function t.GetStyleEvasiveCounter(p1) --[[ GetStyleEvasiveCounter | Line: 1979 | Upvalues: t (copy) ]]
+	local EvasiveCounter = t.GetStyleConfig(p1).EvasiveCounter
+
+	if typeof(EvasiveCounter) == "table" then
+		return EvasiveCounter
+	end
+
+	return nil
+end
+function t.GetStyleCQCCritVfx(p1) --[[ GetStyleCQCCritVfx | Line: 1987 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)
+	local v2 = if v1 then v1.CQCCritVfx else v1
+
+	if typeof(v2) == "table" then
+		return v2
+	end
+
+	return nil
+end
+
+local function styleTable(p1, p2) --[[ styleTable | Line: 1996 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)
+	local v2 = if v1 then v1[p2] else v1
+
+	if typeof(v2) == "table" then
+		return v2
+	end
+
+	return nil
+end
+
+function t.GetStyleCQCCloseQuarters(p1) --[[ GetStyleCQCCloseQuarters | Line: 2005 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)
+	local v2 = if v1 then v1.CQCCloseQuarters else v1
+
+	if typeof(v2) == "table" then
+		return v2
+	end
+
+	return nil
+end
+function t.GetStyleCQCClinchWin(p1) --[[ GetStyleCQCClinchWin | Line: 2009 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)
+	local v2 = if v1 then v1.CQCClinchWin else v1
+
+	if typeof(v2) == "table" then
+		return v2
+	end
+
+	return nil
+end
+function t.GetStyleCQCBossRaid(p1) --[[ GetStyleCQCBossRaid | Line: 2013 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)
+	local v2 = if v1 then v1.CQCBossRaid else v1
+
+	if typeof(v2) == "table" then
+		return v2
+	end
+
+	return nil
+end
+function t.GetStyleKyokushinIronBody(p1) --[[ GetStyleKyokushinIronBody | Line: 2017 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)
+	local v2 = if v1 then v1.KyokushinIronBody else v1
+
+	if typeof(v2) == "table" then
+		return v2
+	end
+
+	return nil
+end
+function t.GetStyleCQCRing(p1) --[[ GetStyleCQCRing | Line: 2026 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)
+	local v2 = if v1 then v1.CQCRing else v1
+
+	if typeof(v2) == "table" then
+		return v2
+	end
+
+	return nil
+end
+function t.GetStyleM2Afterimage(p1) --[[ GetStyleM2Afterimage | Line: 2035 | Upvalues: t (copy) ]]
+	local M2Afterimage = t.GetStyleConfig(p1).M2Afterimage
+
+	if typeof(M2Afterimage) == "table" then
+		return M2Afterimage
+	end
+
+	return nil
+end
+function t.GetStyleM1StepForwardStuds(p1, p2) --[[ GetStyleM1StepForwardStuds | Line: 2043 | Upvalues: t (copy) ]]
+	local M1StepForwardStuds = t.GetStyleConfig(p1).M1StepForwardStuds
+
+	if typeof(M1StepForwardStuds) ~= "table" then
+		return 0
+	end
+
+	local v2 = M1StepForwardStuds[math.clamp(math.floor(p2 or 1), 1, 4)]
+
+	if typeof(v2) == "number" then
+		return math.max(0, v2)
+	end
+
+	return 0
+end
+function t.GetStyleM2StepForwardStuds(p1) --[[ GetStyleM2StepForwardStuds | Line: 2056 | Upvalues: t (copy) ]]
+	local M2StepForwardStuds = t.GetStyleConfig(p1).M2StepForwardStuds
+
+	if typeof(M2StepForwardStuds) == "number" then
+		return math.max(0, M2StepForwardStuds)
+	end
+
+	return 0
+end
+function t.GetStyleM2StepForward(p1) --[[ GetStyleM2StepForward | Line: 2074 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)
+	local M2StepForwardStuds = v1.M2StepForwardStuds
+
+	if typeof(M2StepForwardStuds) ~= "number" or M2StepForwardStuds <= 0 then
+		return nil
+	end
+
+	local StepForward = t.Shared.StepForward
+	local M2StepForwardDuration = v1.M2StepForwardDuration
+
+	if typeof(M2StepForwardDuration) ~= "number" or M2StepForwardDuration <= 0 then
+		M2StepForwardDuration = StepForward.Duration
+	end
+
+	local M2StepForwardMaxSpeed = v1.M2StepForwardMaxSpeed
+
+	if typeof(M2StepForwardMaxSpeed) ~= "number" or M2StepForwardMaxSpeed <= 0 then
+		M2StepForwardMaxSpeed = StepForward.MaxSpeed
+	end
+
+	local M2StepForwardDelay = v1.M2StepForwardDelay
+
+	if typeof(M2StepForwardDelay) ~= "number" or M2StepForwardDelay < 0 then
+		M2StepForwardDelay = 0
+	end
+
+	local M2StepForwardSound = v1.M2StepForwardSound
+	local v2 = nil
+	local v3 = nil
+
+	if typeof(M2StepForwardSound) == "table" and (typeof(M2StepForwardSound.Folder) == "string" and typeof(M2StepForwardSound.Name) == "string") then
+		v2 = M2StepForwardSound.Folder
+		v3 = M2StepForwardSound.Name
+	end
+
+	return {
+		Studs = M2StepForwardStuds,
+		Delay = M2StepForwardDelay,
+		Duration = M2StepForwardDuration,
+		MaxSpeed = M2StepForwardMaxSpeed,
+		SoundFolder = v2,
+		SoundName = v3
+	}
+end
+function t.GetStyleM1FinisherKnockback(p1) --[[ GetStyleM1FinisherKnockback | Line: 2118 | Upvalues: t (copy) ]]
+	return t.GetStyleNumber(p1, "M1FinisherKnockback", t.M1.FinisherKnockback) or t.M1.FinisherKnockback
+end
+function t.GetStyleM1StepForward(p1, p2) --[[ GetStyleM1StepForward | Line: 2132 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleM1StepForwardStuds(p1, p2)
+
+	if typeof(v1) ~= "number" or v1 <= 0 then
+		return nil
+	end
+
+	local v2 = t.GetStyleConfig(p1)
+	local StepForward = t.Shared.StepForward
+	local v3 = 0
+	local M1StepForwardDelay = v2.M1StepForwardDelay
+
+	if typeof(M1StepForwardDelay) == "table" then
+		local v4 = M1StepForwardDelay[p2]
+
+		if typeof(v4) == "number" and v4 > 0 then
+			v3 = v4
+		end
+	elseif typeof(M1StepForwardDelay) == "number" and M1StepForwardDelay > 0 then
+		v3 = M1StepForwardDelay
+	end
+
+	local M1StepForwardDuration = v2.M1StepForwardDuration
+
+	if typeof(M1StepForwardDuration) ~= "number" or M1StepForwardDuration <= 0 then
+		M1StepForwardDuration = StepForward.Duration
+	end
+
+	local M1StepForwardMaxSpeed = v2.M1StepForwardMaxSpeed
+
+	if typeof(M1StepForwardMaxSpeed) ~= "number" or M1StepForwardMaxSpeed <= 0 then
+		M1StepForwardMaxSpeed = StepForward.MaxSpeed
+	end
+
+	return {
+		Studs = v1,
+		Delay = v3,
+		Duration = M1StepForwardDuration,
+		MaxSpeed = M1StepForwardMaxSpeed
+	}
+end
+function t.GetStyleM2MultiHitDelays(p1) --[[ GetStyleM2MultiHitDelays | Line: 2171 | Upvalues: t (copy) ]]
+	local M2MultiHitDelays = t.GetStyleConfig(p1).M2MultiHitDelays
+
+	if typeof(M2MultiHitDelays) ~= "table" or #M2MultiHitDelays < 2 then
+		return nil
+	end
+
+	for v1, v2 in M2MultiHitDelays do
+		if typeof(v2) ~= "number" then
+			return nil
+		end
+	end
+
+	return M2MultiHitDelays
+end
+function t.GetStyleM2MultiHitRagdollPhase(p1) --[[ GetStyleM2MultiHitRagdollPhase | Line: 2186 | Upvalues: t (copy) ]]
+	local M2MultiHitRagdollPhase = t.GetStyleConfig(p1).M2MultiHitRagdollPhase
+
+	if typeof(M2MultiHitRagdollPhase) == "number" and not (M2MultiHitRagdollPhase < 1) then
+		return math.floor(M2MultiHitRagdollPhase)
+	end
+
+	return nil
+end
+function t.GetStyleM2ActivateSound(p1) --[[ GetStyleM2ActivateSound | Line: 2195 | Upvalues: t (copy) ]]
+	local M2ActivateSound = t.GetStyleConfig(p1).M2ActivateSound
+
+	if typeof(M2ActivateSound) ~= "table" then
+		return nil
+	end
+
+	if typeof(M2ActivateSound.Folder) ~= "string" then
+		return nil
+	end
+
+	if typeof(M2ActivateSound.Name) == "string" then
+		return M2ActivateSound
+	end
+
+	return nil
+end
+function t.GetStyleCritVfx(p1) --[[ GetStyleCritVfx | Line: 2207 | Upvalues: t (copy) ]]
+	local LethweiCritVfx = t.GetStyleConfig(p1).LethweiCritVfx
+
+	if typeof(LethweiCritVfx) ~= "table" then
+		return nil
+	end
+
+	if typeof(LethweiCritVfx.Assets) == "table" then
+		return LethweiCritVfx
+	end
+
+	return nil
+end
+function t.GetStyleM2CritVfx(p1) --[[ GetStyleM2CritVfx | Line: 2216 | Upvalues: t (copy) ]]
+	local MishimaCritVfx = t.GetStyleConfig(p1).MishimaCritVfx
+
+	if typeof(MishimaCritVfx) ~= "table" then
+		return nil
+	end
+
+	if typeof(MishimaCritVfx.PhaseAssets) == "table" then
+		return MishimaCritVfx
+	end
+
+	return nil
+end
+function t.GetStyleMishimaCripple(p1) --[[ GetStyleMishimaCripple | Line: 2224 | Upvalues: t (copy) ]]
+	local MishimaCripple = t.GetStyleConfig(p1).MishimaCripple
+
+	if typeof(MishimaCripple) == "table" then
+		return MishimaCripple
+	end
+
+	return nil
+end
+function t.GetStyleMishimaUnbothered(p1) --[[ GetStyleMishimaUnbothered | Line: 2229 | Upvalues: t (copy) ]]
+	local MishimaUnbothered = t.GetStyleConfig(p1).MishimaUnbothered
+
+	if typeof(MishimaUnbothered) == "table" then
+		return MishimaUnbothered
+	end
+
+	return nil
+end
+function t.GetStyleMishimaShifty(p1) --[[ GetStyleMishimaShifty | Line: 2234 | Upvalues: t (copy) ]]
+	local MishimaShifty = t.GetStyleConfig(p1).MishimaShifty
+
+	if typeof(MishimaShifty) == "table" then
+		return MishimaShifty
+	end
+
+	return nil
+end
+function t.GetStyleM2HitboxDuration(p1) --[[ GetStyleM2HitboxDuration | Line: 2239 | Upvalues: t (copy) ]]
+	return t.GetStyleNumber(p1, "M2HitboxDuration", t.M2.HitboxDuration)
+end
+function t.GetStyleBoolean(p1, p2, p3) --[[ GetStyleBoolean | Line: 2243 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)[p2]
+
+	if typeof(v1) == "boolean" then
+		return v1
+	end
+
+	local v2 = t.Styles.default[p2]
+
+	if typeof(v2) == "boolean" then
+		return v2
+	end
+
+	return p3
+end
+function t.GetStyleColor(p1, p2, p3) --[[ GetStyleColor | Line: 2258 | Upvalues: t (copy) ]]
+	local v1 = t.GetStyleConfig(p1)[p2]
+
+	if typeof(v1) == "Color3" then
+		return v1
+	end
+
+	local v2 = t.Styles.default[p2]
+
+	if typeof(v2) == "Color3" then
+		return v2
+	end
+
+	return p3
+end
+function t.GetGrappleChance(p1) --[[ GetGrappleChance | Line: 2275 | Upvalues: t (copy) ]]
+	local GrappleChance = t.GetStyleConfig(p1).GrappleChance
+
+	if typeof(GrappleChance) == "number" then
+		return GrappleChance
+	end
+
+	return 0
+end
+
+local t2 = {
+	"FirstM1HitboxDelayOffset",
+	"SecondM1HitboxDelayOffset",
+	"ThirdM1HitboxDelayOffset",
+	"FourthM1HitboxDelayOffset"
+}
+
+function t.GetStyleM1HitboxDelayOffset(p1, p2) --[[ GetStyleM1HitboxDelayOffset | Line: 2292 | Upvalues: t (copy), t2 (copy) ]]
+	local v2 = math.clamp(math.floor(p2), 1, 4)
+	local M1HitboxDelayOffsets = t.GetStyleConfig(p1).M1HitboxDelayOffsets
+
+	if typeof(M1HitboxDelayOffsets) == "table" then
+		local v3 = M1HitboxDelayOffsets[v2]
+
+		if typeof(v3) == "number" then
+			return v3
+		end
+	end
+
+	local v4 = t2[v2]
+
+	if v4 then
+		return t.GetStyleNumber(p1, v4, 0)
+	end
+
+	return 0
+end
+function t.GetScaledStyleM1HitboxDelay(p1, p2, p3) --[[ GetScaledStyleM1HitboxDelay | Line: 2313 | Upvalues: t (copy) ]]
+	return t.GetScaledHitboxDelay(math.max(0, t.GetStyleNumber(p1, "M1HitboxDelay", t.M1.DefaultHitboxDelay) + t.GetStyleM1HitboxDelayOffset(p1, p2)), p3)
+end
+function t.GetStyleHitboxForwardOffset(p1, p2) --[[ GetStyleHitboxForwardOffset | Line: 2321 | Upvalues: t (copy) ]]
+	local v1 = if p2 == "M2" then true else false
+	local v2 = if v1 then t.M2.DefaultHitboxForwardOffset else t.M1.DefaultHitboxForwardOffset
+	local v5 = t.GetStyleConfig(p1)[if v1 then "M2HitboxForwardOffset" else "M1HitboxForwardOffset"]
+
+	if typeof(v5) == "number" then
+		return math.max(0, v5)
+	end
+
+	return math.max(0, v2 + (t.GetStyleNumber(p1, if v1 then "M2HitboxForwardOffsetBonus" else "M1HitboxForwardOffsetBonus", 0) or 0))
+end
+function t.GetScaledHitboxDelay(p1, p2) --[[ GetScaledHitboxDelay | Line: 2337 | Upvalues: t (copy) ]]
+	local v2 = math.max(0.05, if typeof(p2) == "number" and not (p2 <= 0) then p2 else 1)
+	local HitboxWindupExtra = t.Shared.HitboxWindupExtra
+
+	if typeof(HitboxWindupExtra) ~= "number" then
+		HitboxWindupExtra = 0
+	end
+
+	return p1 / v2 + HitboxWindupExtra / v2
+end
+function t.AreHitboxVisualizersEnabled() --[[ AreHitboxVisualizersEnabled | Line: 2352 | Upvalues: t (copy) ]]
+	return t.Shared.DebugHitboxVisualizers == true
+end
+
+return t

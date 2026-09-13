@@ -1,2 +1,0 @@
-_G.Key = " " -- Key here
-loadstring(game:HttpGet("https://raw.githubusercontent.com/BoopBeepOffical/Gakuran-Yashin/refs/heads/main/Gakuran%20Yashin"))()
